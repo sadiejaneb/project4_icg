@@ -65,6 +65,7 @@ public class PlayerInput : MonoBehaviour
 
     WaitForSeconds m_AttackInputWait;
     Coroutine m_AttackWaitCoroutine;
+    Coroutine m_SecondaryAttackWaitCoroutine;
 
     const float k_AttackInputDuration = 0.03f;
 
@@ -94,10 +95,10 @@ public class PlayerInput : MonoBehaviour
         }
         if (Input.GetButtonDown("Fire2")) // Assuming "Fire2" is mapped to the right mouse button.
         {
-            if (m_AttackWaitCoroutine != null)
-                StopCoroutine(m_AttackWaitCoroutine);
+            if (m_SecondaryAttackWaitCoroutine != null)
+                StopCoroutine(m_SecondaryAttackWaitCoroutine);
 
-            m_AttackWaitCoroutine = StartCoroutine(SecondaryAttackWait());
+            m_SecondaryAttackWaitCoroutine = StartCoroutine(SecondaryAttackWait());
         }
 
         m_Pause = Input.GetButtonDown ("Pause");
@@ -128,10 +129,13 @@ public class PlayerInput : MonoBehaviour
     }
     IEnumerator SecondaryAttackWait()
     {
+        Debug.Log("Secondary attack started");
         m_SecondaryAttack = true;
 
         yield return m_AttackInputWait;
 
         m_SecondaryAttack = false;
+        Debug.Log("Secondary attack ended");
     }
+
 }
