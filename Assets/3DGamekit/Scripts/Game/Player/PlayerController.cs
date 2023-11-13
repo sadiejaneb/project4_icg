@@ -58,6 +58,7 @@ namespace Gamekit3D
         protected Checkpoint m_CurrentCheckpoint;      // Reference used to reset Ellen to the correct position on respawn.
         protected bool m_Respawning;                   // Whether Ellen is currently respawning.
         protected float m_IdleTimer;                   // Used to count up to Ellen considering a random idle.
+        
 
         // These constants are used to ensure Ellen moves and behaves properly.
         // It is advised you don't change them without fully understanding what they do in code.
@@ -79,6 +80,7 @@ namespace Gamekit3D
         readonly int m_HashGrounded = Animator.StringToHash("Grounded");
         readonly int m_HashInputDetected = Animator.StringToHash("InputDetected");
         readonly int m_HashMeleeAttack = Animator.StringToHash("MeleeAttack");
+        readonly int m_HashSecondaryAttack = Animator.StringToHash("SecondaryAttack");
         readonly int m_HashHurt = Animator.StringToHash("Hurt");
         readonly int m_HashDeath = Animator.StringToHash("Death");
         readonly int m_HashRespawn = Animator.StringToHash("Respawn");
@@ -149,6 +151,7 @@ namespace Gamekit3D
             meleeWeapon.SetOwner(gameObject);
 
             s_Instance = this;
+            
         }
 
         // Called automatically by Unity after Awake whenever the script is enabled. 
@@ -176,6 +179,11 @@ namespace Gamekit3D
                 m_Renderers[i].enabled = true;
             }
         }
+        void Update()
+        {
+            // Example: Allow attacking only when grounded and not currently attacking
+            canAttack = !m_InAttack;
+        }
 
         // Called automatically by Unity once every Physics step.
         void FixedUpdate()
@@ -184,19 +192,44 @@ namespace Gamekit3D
 
             UpdateInputBlocking();
 
+            // Assuming you have a method in PlayerController that determines if the weapon is equipped
+            // and it should be based on whether Ellen is in an attack state.
             EquipMeleeWeapon(IsWeaponEquiped());
+            // Disable attacks during certain animations
+            if (m_Animator.GetCurrentAnimatorStateInfo(0).IsName("Death"))
+            {
+                canAttack = false;
+            }
+            else
+            {
+                // Enable attacks based on other conditions
+                canAttack = m_IsGrounded; 
+            }
 
             m_Animator.SetFloat(m_HashStateTime, Mathf.Repeat(m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime, 1f));
             m_Animator.ResetTrigger(m_HashMeleeAttack);
+            m_Animator.ResetTrigger(m_HashSecondaryAttack);
 
-            if (m_Input.Attack && canAttack)
+
+            if (PlayerInput.Instance.Attack && canAttack)
+            {
+                // Assuming m_HashMeleeAttack is a trigger set up for left click attack
                 m_Animator.SetTrigger(m_HashMeleeAttack);
+                EquipMeleeWeapon(true); // This should equip the staff
+            }
+            else if (PlayerInput.Instance.SecondaryAttack && canAttack)
+            {
+                // Assuming m_HashSecondaryAttack is a trigger set up for right click attack
+                m_Animator.SetTrigger(m_HashSecondaryAttack);
+                EquipMeleeWeapon(true); // This should also equip the staff
+            }
 
             CalculateForwardMovement();
             CalculateVerticalMovement();
 
             SetTargetRotation();
 
+            // Update Ellen's orientation based on input and current movement state
             if (IsOrientationUpdated() && IsMoveInput)
                 UpdateOrientation();
 
@@ -206,6 +239,7 @@ namespace Gamekit3D
 
             m_PreviouslyGrounded = m_IsGrounded;
         }
+
 
         // Called at the start of FixedUpdate to record the current state of the base layer of the animator.
         void CacheAnimatorState()
@@ -247,6 +281,7 @@ namespace Gamekit3D
 
             if (!equip)
                 m_Animator.ResetTrigger(m_HashMeleeAttack);
+                m_Animator.ResetTrigger(m_HashSecondaryAttack);
         }
 
         // Called each physics step.
@@ -570,7 +605,6 @@ namespace Gamekit3D
         {
             StartCoroutine(RespawnRoutine());
         }
-
         protected IEnumerator RespawnRoutine()
         {
             // Wait for the animator to be transitioning from the EllenDeath state.
@@ -623,53 +657,7 @@ namespace Gamekit3D
             m_Damageable.isInvulnerable = false;
         }
 
-        // Called by Ellen's Damageable when she is hurt.
-        // public void OnReceiveMessage(MessageType type, object sender, object data)
-        // {
-        //     switch (type)
-        //     {
-        //         case MessageType.DAMAGED:
-        //             {
-        //                 Damageable.DamageMessage damageData = (Damageable.DamageMessage)data;
-        //                 Damaged(damageData);
-        //             }
-        //             break;
-        //         case MessageType.DEAD:
-        //             {
-        //                 Damageable.DamageMessage damageData = (Damageable.DamageMessage)data;
-        //                 Die(damageData);
-        //             }
-        //             break;
-        //     }
-        // }
 
-        // // Called by OnReceiveMessage.
-        // void Damaged(Damageable.DamageMessage damageMessage)
-        // {
-        //     // Set the Hurt parameter of the animator.
-        //     m_Animator.SetTrigger(m_HashHurt);
-
-        //     // Find the direction of the damage.
-        //     Vector3 forward = damageMessage.damageSource - transform.position;
-        //     forward.y = 0f;
-
-        //     Vector3 localHurt = transform.InverseTransformDirection(forward);
-
-        //     // Set the HurtFromX and HurtFromY parameters of the animator based on the direction of the damage.
-        //     m_Animator.SetFloat(m_HashHurtFromX, localHurt.x);
-        //     m_Animator.SetFloat(m_HashHurtFromY, localHurt.z);
-
-        //     // Shake the camera.
-        //     CameraShake.Shake(CameraShake.k_PlayerHitShakeAmount, CameraShake.k_PlayerHitShakeTime);
-
-        //     // Play an audio clip of being hurt.
-        //     if (hurtAudioPlayer != null)
-        //     {
-        //         hurtAudioPlayer.PlayRandomClip();
-        //     }
-        // }
-
-        // Called by OnReceiveMessage and by DeathVolumes in the scene.
         public void Die()
         {
             m_Animator.SetTrigger(m_HashDeath);
