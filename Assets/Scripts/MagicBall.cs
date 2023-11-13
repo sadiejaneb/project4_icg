@@ -2,14 +2,16 @@ using UnityEngine;
 
 public class MagicBall : MonoBehaviour
 {
-    public Color startColor = Color.blue;
-    public Color endColor = Color.green;
+    public Color[] colors; // Array of colors
     public float colorChangeSpeed = 1.0f;
+    private int currentColorIndex = 0;
+    private float transitionProgress = 0f; // Tracks the progress of the color transition
 
     private Material material;
     private ParticleSystem particleEffect;
-    private Renderer renderer;
+    private Renderer myRenderer;
     private AudioSource audioSource;
+
 
     void Start()
     {
@@ -17,15 +19,32 @@ public class MagicBall : MonoBehaviour
         particleEffect = GetComponentInChildren<ParticleSystem>();
 
         // Get the Renderer component
-        renderer = GetComponent<Renderer>(); // This is the updated line
-        material = renderer.material; // Get a reference to the material
+        myRenderer = GetComponent<Renderer>();
+        material = myRenderer.material; // Get a reference to the material
         audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
     {
-        // Lerp the color of the material based on the time
-        material.color = Color.Lerp(startColor, endColor, Mathf.PingPong(Time.time * colorChangeSpeed, 1));
+        if (colors.Length < 2) return; // Ensure there are at least two colors
+
+        // Calculate the next color index
+        int nextColorIndex = (currentColorIndex + 1) % colors.Length;
+
+        // Update the transition progress
+        transitionProgress += Time.deltaTime * colorChangeSpeed;
+
+        // Lerp the color of the material
+        material.color = Color.Lerp(colors[currentColorIndex], colors[nextColorIndex], transitionProgress);
+
+        // Check if the transition is complete
+        if (transitionProgress >= 1f)
+        {
+            // Move to the next color
+            currentColorIndex = nextColorIndex;
+            // Reset the transition progress
+            transitionProgress = 0f;
+        }
     }
 
     private void OnTriggerEnter(Collider other)

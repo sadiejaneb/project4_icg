@@ -17265,8 +17265,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2a1ab4111fa550429770117bf3733f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startColor: {r: 0, g: 0.43849897, b: 1, a: 1}
-  endColor: {r: 0, g: 1, b: 0, a: 1}
+  colors:
+  - {r: 0.033018887, g: 0.5487421, b: 1, a: 0}
+  - {r: 0, g: 1, b: 0.44939637, a: 0}
+  - {r: 1, g: 0, b: 0, a: 0}
+  - {r: 1, g: 0, b: 0.9132972, a: 0}
+  - {r: 0.17849922, g: 0, b: 1, a: 0}
   colorChangeSpeed: 0.5
 --- !u!82 &835874966
 AudioSource:
