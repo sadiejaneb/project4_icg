@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class MagicBall : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class MagicBall : MonoBehaviour
     private ParticleSystem particleEffect;
     private Renderer myRenderer;
     private AudioSource audioSource;
+    private float playDuration = 4.0f;
 
 
     void Start()
@@ -60,7 +62,7 @@ public class MagicBall : MonoBehaviour
             // Play the sound
             if (audioSource != null && !audioSource.isPlaying)
             {
-                audioSource.Play();
+                StartCoroutine(PlayAudioInLoop());
             }
         }
     }
@@ -79,8 +81,21 @@ public class MagicBall : MonoBehaviour
             // Stop the sound if it should only play while in contact
             if (audioSource != null && audioSource.isPlaying)
             {
+                StopCoroutine(PlayAudioInLoop());
                 audioSource.Stop();
             }
+        }
+    }
+    private IEnumerator PlayAudioInLoop()
+    {
+        while (true)
+        {
+            audioSource.Play();
+            yield return new WaitForSeconds(playDuration);
+            audioSource.Stop();
+
+            // Restart the clip from the beginning
+            audioSource.time = 0;
         }
     }
 }
