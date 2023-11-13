@@ -20,6 +20,7 @@ public class PlayerInput : MonoBehaviour
     protected Vector2 m_Camera;
     protected bool m_Jump;
     protected bool m_Attack;
+    protected bool m_SecondaryAttack; // For the right mouse button click.
     protected bool m_Pause;
     protected bool m_ExternalInputBlocked;
 
@@ -51,6 +52,10 @@ public class PlayerInput : MonoBehaviour
     public bool Attack
     {
         get { return m_Attack && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
+    }
+    public bool SecondaryAttack
+    {
+        get { return m_SecondaryAttack && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
     }
 
     public bool Pause
@@ -87,6 +92,13 @@ public class PlayerInput : MonoBehaviour
 
             m_AttackWaitCoroutine = StartCoroutine(AttackWait());
         }
+        if (Input.GetButtonDown("Fire2")) // Assuming "Fire2" is mapped to the right mouse button.
+        {
+            if (m_AttackWaitCoroutine != null)
+                StopCoroutine(m_AttackWaitCoroutine);
+
+            m_AttackWaitCoroutine = StartCoroutine(SecondaryAttackWait());
+        }
 
         m_Pause = Input.GetButtonDown ("Pause");
     }
@@ -113,5 +125,13 @@ public class PlayerInput : MonoBehaviour
     public void GainControl()
     {
         m_ExternalInputBlocked = false;
+    }
+    IEnumerator SecondaryAttackWait()
+    {
+        m_SecondaryAttack = true;
+
+        yield return m_AttackInputWait;
+
+        m_SecondaryAttack = false;
     }
 }

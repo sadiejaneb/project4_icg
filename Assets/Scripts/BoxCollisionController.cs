@@ -15,7 +15,9 @@ public class BoxCollisionController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.tag == "Cube") {
         playerController.Die();
+        }
     }
 
 
