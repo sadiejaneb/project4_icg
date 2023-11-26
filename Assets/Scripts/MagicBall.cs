@@ -13,6 +13,7 @@ public class MagicBall : MonoBehaviour
     private Renderer myRenderer;
     private AudioSource audioSource;
     private float playDuration = 4.0f;
+    private bool playerInsideTrigger = false;
 
 
     void Start()
@@ -54,6 +55,7 @@ public class MagicBall : MonoBehaviour
         Debug.Log("Trigger detected with object: " + other.gameObject.name);
         if (other.CompareTag("Player"))
         {
+            playerInsideTrigger = true;
             Debug.Log("Player entered magic ball's trigger area");
             if (particleEffect != null && !particleEffect.isPlaying)
             {
@@ -72,6 +74,7 @@ public class MagicBall : MonoBehaviour
         Debug.Log("Trigger exit detected with object: " + other.gameObject.name);
         if (other.CompareTag("Player"))
         {
+            playerInsideTrigger = false;
             Debug.Log("Player exited magic ball's trigger area");
             if (particleEffect != null && particleEffect.isPlaying)
             {
@@ -88,7 +91,7 @@ public class MagicBall : MonoBehaviour
     }
     private IEnumerator PlayAudioInLoop()
     {
-        while (true)
+        while (playerInsideTrigger)
         {
             audioSource.Play();
             yield return new WaitForSeconds(playDuration);

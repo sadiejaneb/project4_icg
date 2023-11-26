@@ -64,14 +64,17 @@ public class PlayerInput : MonoBehaviour
     }
 
     WaitForSeconds m_AttackInputWait;
+    WaitForSeconds m_SecondaryAttackInputWait;
     Coroutine m_AttackWaitCoroutine;
     Coroutine m_SecondaryAttackWaitCoroutine;
 
     const float k_AttackInputDuration = 0.03f;
+    const float k_SecondaryAttackInputDuration = 0.03f;
 
     void Awake()
     {
         m_AttackInputWait = new WaitForSeconds(k_AttackInputDuration);
+        m_SecondaryAttackInputWait = new WaitForSeconds(k_SecondaryAttackInputDuration);
 
         if (s_Instance == null)
             s_Instance = this;
@@ -93,8 +96,9 @@ public class PlayerInput : MonoBehaviour
 
             m_AttackWaitCoroutine = StartCoroutine(AttackWait());
         }
-        if (Input.GetButtonDown("Fire2")) // Assuming "Fire2" is mapped to the right mouse button.
+        if (Input.GetButtonDown("Fire2")) 
         {
+            Debug.Log("Secondary attack button pressed");
             if (m_SecondaryAttackWaitCoroutine != null)
                 StopCoroutine(m_SecondaryAttackWaitCoroutine);
 
@@ -112,6 +116,16 @@ public class PlayerInput : MonoBehaviour
 
         m_Attack = false;
     }
+    IEnumerator SecondaryAttackWait()
+    {
+        Debug.Log("Secondary attack started");
+        m_SecondaryAttack = true;
+
+        yield return m_AttackInputWait;
+
+        m_SecondaryAttack = false;
+        Debug.Log("Secondary attack ended");
+    }
 
     public bool HaveControl()
     {
@@ -127,15 +141,4 @@ public class PlayerInput : MonoBehaviour
     {
         m_ExternalInputBlocked = false;
     }
-    IEnumerator SecondaryAttackWait()
-    {
-        Debug.Log("Secondary attack started");
-        m_SecondaryAttack = true;
-
-        yield return m_AttackInputWait;
-
-        m_SecondaryAttack = false;
-        Debug.Log("Secondary attack ended");
-    }
-
 }
