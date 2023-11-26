@@ -6181,7 +6181,6 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: b86bedba3016387469ab3ac227a45992, type: 2}
-  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6849,7 +6848,7 @@ GameObject:
   - component: {fileID: 4084877968444736}
   m_Layer: 9
   m_Name: Ellen_Skeleton
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -19258,7 +19257,7 @@ GameObject:
   - component: {fileID: 4869608699489792}
   m_Layer: 9
   m_Name: HeadTarget
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -20142,7 +20141,7 @@ GameObject:
   - component: {fileID: 114714144567235164}
   m_Layer: 9
   m_Name: Ellen_Body
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -22120,6 +22119,7 @@ GameObject:
   - component: {fileID: 114603677736913854}
   - component: {fileID: 114579421511091938}
   - component: {fileID: 114166992771378430}
+  - component: {fileID: 4419609355243858918}
   m_Layer: 9
   m_Name: Ellen
   m_TagString: Player
@@ -22151,7 +22151,7 @@ Transform:
   - {fileID: 4564986605801290}
   - {fileID: 4031617287498508}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &95065152071237234
 Animator:
@@ -22221,8 +22221,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
-        m_MethodName: ChangeHitPointUI
-        m_Mode: 2
+        m_MethodName: 
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 114011089888769184}
           m_ObjectArgumentAssemblyTypeName: Gamekit3D.Damageable, Assembly-CSharp
@@ -22335,7 +22335,7 @@ MonoBehaviour:
   minTurnSpeed: 400
   maxTurnSpeed: 1200
   idleTimeout: 5
-  canAttack: 1
+  canAttack: 0
   cameraSettings: {fileID: 0}
   meleeWeapon: {fileID: 114298887321203036}
   footstepPlayer: {fileID: 114094828976615078}
@@ -22358,6 +22358,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arcsCount: 12
+--- !u!114 &4419609355243858918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1991219941496362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1329ec357701e0041a3e93dd8049f941, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1991219941496362}
+  playerController: {fileID: 114579421511091938}
 --- !u!1 &1991646998098166
 GameObject:
   m_ObjectHideFlags: 0

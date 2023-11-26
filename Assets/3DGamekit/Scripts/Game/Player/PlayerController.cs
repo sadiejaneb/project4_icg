@@ -81,6 +81,7 @@ namespace Gamekit3D
         readonly int m_HashInputDetected = Animator.StringToHash("InputDetected");
         readonly int m_HashMeleeAttack = Animator.StringToHash("MeleeAttack");
         readonly int m_HashSecondaryAttack = Animator.StringToHash("SecondaryAttack");
+
         readonly int m_HashHurt = Animator.StringToHash("Hurt");
         readonly int m_HashDeath = Animator.StringToHash("Death");
         readonly int m_HashRespawn = Animator.StringToHash("Respawn");
@@ -211,16 +212,18 @@ namespace Gamekit3D
             m_Animator.ResetTrigger(m_HashSecondaryAttack);
 
 
-            if (PlayerInput.Instance.Attack && canAttack)
+            if (m_Input.Attack && canAttack)
             {
-                // Assuming m_HashMeleeAttack is a trigger set up for left click attack
                 m_Animator.SetTrigger(m_HashMeleeAttack);
                 EquipMeleeWeapon(true); // This should equip the staff
             }
-            else if (PlayerInput.Instance.SecondaryAttack && canAttack)
+            if (m_Input.SecondaryAttack && canAttack)
             {
-                // Assuming m_HashSecondaryAttack is a trigger set up for right click attack
+                m_Animator.SetBool(m_HashInputDetected, true);
+
+                Debug.Log("Setting SecondaryAttack trigger");
                 m_Animator.SetTrigger(m_HashSecondaryAttack);
+               
                 EquipMeleeWeapon(true); // This should also equip the staff
             }
 
@@ -281,7 +284,7 @@ namespace Gamekit3D
 
             if (!equip)
                 m_Animator.ResetTrigger(m_HashMeleeAttack);
-                m_Animator.ResetTrigger(m_HashSecondaryAttack);
+               // m_Animator.ResetTrigger(m_HashSecondaryAttack);
         }
 
         // Called each physics step.
@@ -504,7 +507,8 @@ namespace Gamekit3D
         // Called each physics step to count up to the point where Ellen considers a random idle.
         void TimeoutToIdle()
         {
-            bool inputDetected = IsMoveInput || m_Input.Attack || m_Input.JumpInput;
+            // Update to include secondary attack
+            bool inputDetected = IsMoveInput || m_Input.Attack || m_Input.JumpInput || m_Input.SecondaryAttack;
             if (m_IsGrounded && !inputDetected)
             {
                 m_IdleTimer += Time.deltaTime;
